@@ -1,10 +1,14 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
-# from sklearn.metrics import mean_absolute_error
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import cross_val_score
 
 # Training data
 trainingData = pd.read_csv('C:/Users/Tobia/Desktop/csvs/Training.csv')
@@ -42,6 +46,17 @@ rfPred = rfmodel.predict(splitPredX)
 print("RF training split Accuracy: {:.3f}%".format(metrics.accuracy_score(splitPredY, rfPred)*100))
 
 # Logistic regression? <- "It is the go-to method for binary classification problems"
+lrmodel = LogisticRegression(random_state=0)
+
+scores = cross_val_score(lrmodel, X, y, cv=5)
+print('Cross validation accuracy scores', scores)
+
+# lrmodel.fit(X, y)
+# lrpred = lrmodel.predict(XTest)
+# print("Logistic regression accuracy: {:.3f}%".format(metrics.accuracy_score(yTest, lrpred)*100))
+
+
+
 # Support vector machine? <- bruger man vidst ikke mere i følge Simon
 # Naïve bayes algorithm?
 # K-nearest neighbour
