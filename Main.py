@@ -1,13 +1,10 @@
 import pandas as pd
-# from sklearn.model_selection import train_test_split
-# from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 
-from sklearn.metrics import mean_absolute_error
 from sklearn import metrics
-
-from sklearn.preprocessing import OrdinalEncoder
+# from sklearn.metrics import mean_absolute_error
 
 # Training data
 trainingData = pd.read_csv('C:/Users/Tobia/Desktop/csvs/Training.csv')
@@ -24,25 +21,30 @@ XTest = testData
 yTest = XTest.prognosis
 XTest.drop(['prognosis'], axis=1, inplace=True)
 
+# Prøver at splittet training sættet, da der er flere rows i den
+splitTrainX, splitPredX, splitTrainY, splitPredY = train_test_split(X, y, random_state=1)
+
 # DecisionTreeClassifier
 dtModel = DecisionTreeClassifier(random_state=1)
 dtModel.fit(X, y)
 dtPred = dtModel.predict(XTest)
-
-print("Accuracy: {:.2f}%".format(metrics.accuracy_score(yTest, dtPred)*100))
+print("DT Accuracy: {:.3f}%".format(metrics.accuracy_score(yTest, dtPred)*100))
 
 # RandomForestRegressor
-rfmodel = RandomForestRegressor(random_state=1)
+rfmodel = RandomForestClassifier(random_state=1)
 rfmodel.fit(X, y)
+rfPred = rfmodel.predict(XTest)
+print("RF Accuracy: {:.3f}%".format(metrics.accuracy_score(yTest, rfPred)*100))
 
-ordinalEncoder = OrdinalEncoder()
-label_X_train = X.copy()
-label_X_test = XTest.copy()
+# RFC, men med training dataen splittet i to
+rfmodel.fit(splitTrainX, splitTrainY)
+rfPred = rfmodel.predict(splitPredX)
+print("RF training split Accuracy: {:.3f}%".format(metrics.accuracy_score(splitPredY, rfPred)*100))
 
-predictions = rfmodel.predict(XTest)
-mae = mean_absolute_error(predictions, yTest)
-
-print("MAE: {}".format(mae))
+# Logistic regression? <- "It is the go-to method for binary classification problems"
+# Support vector machine? <- bruger man vidst ikke mere i følge Simon
+# Naïve bayes algorithm?
+# K-nearest neighbour
 
 
 # columns = []
