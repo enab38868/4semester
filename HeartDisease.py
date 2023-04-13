@@ -9,6 +9,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OrdinalEncoder
+
 
 # https://www.kaggle.com/datasets/ambujdevsingh/key-indicators-of-heart-disease
 # Explanation of the variables of the dataset
@@ -36,12 +39,36 @@ data = pd.read_csv('C:/Users/Emil9/Datasets/heart_2022_Key_indicators.csv')
 # For at se om der er nogle columns uden values. (Det var der ikke)
 # print(data.isna().sum())
 X = data
+y = data['HeartDisease']
 X.drop(["HeartDisease"], axis=1, inplace=True)
-y = data["HeartDisease"]
 
 split_train_X, split_pred_X, split_train_y, split_pred_y = train_test_split(X, y, random_state=1)
 
+categorical_cols = ["Smoking", "AlcoholDrinking", "Stroke", "DiffWalking", "Sex", "AgeCategory", "Race", "Diabetic", "PhysicalActivity", "GenHealth", "Asthma", "KidneyDisease", "SkinCancer"]
+numerical_cols = ["BMI", "PhysicalHealth", "MentalHealth", "SleepTime"]
+cols = categorical_cols + numerical_cols  # Tror måske ikke det her giver mening, da jeg tager alle columns med anyway.. ?
 
+X_train = split_train_X[cols].copy()  # ved ikke helt hvorfor man skal bruge .copy() her
+X_valid = split_pred_X[cols].copy()
+X_test = X[cols]
 
+# categorical_transformer = OneHotEncoder()
+categorical_transformer = Pipeline(steps=[('onehot', OneHotEncoder(handle_unknown='ignore'))])
 
+preprocessor = ColumnTransformer(
+    transformers=[('cat', categorical_transformer, categorical_cols)])
+
+model = LogisticRegression(random_state=0)
+
+clf = Pipeline(steps=[('preprocessor', preprocessor),
+                      ('model', model)])
+#clf.fit(X_train, split_train_y)
+#preds = clf.predict(X_valid)
+
+print("X", X_valid.shape)
+print("y", split_train_y.shape)
+# Et eller andet steder bliver der droppet en masse linjer fra X - må vel ske under preprocessing.. ?
+
+scores = cross_val_score(model, X_valid, split_train_y, cv=5)
+print('Cross validation scores', scores)
 

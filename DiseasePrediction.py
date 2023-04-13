@@ -12,7 +12,7 @@ from sklearn.model_selection import cross_val_score
 
 # Training data
 trainingData = pd.read_csv('C:/Users/Emil9/Datasets/csvs/Training.csv')
-trainingData.drop('Unnamed: 133', axis=1, inplace=True)  # drop af tom column i slutningen af dataen
+trainingData.drop('Unnamed: 133', axis=1, inplace=True)  # drop af tom column i slutningen af data'en
 
 X = trainingData
 y = trainingData["prognosis"]
