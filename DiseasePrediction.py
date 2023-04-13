@@ -53,7 +53,7 @@ print('Cross validation accuracy scores', scores)
 
 # lrmodel.fit(X, y)
 # lrpred = lrmodel.predict(XTest)
-# print("Logistic regression accuracy: {:.3f}%".format(metrics.accuracy_score(yTest, lrpred)*100))
+# print("Logistic regression accuracy: {:.3f}%".format(metrics.accuracy_score(yTest, lrpred) * 100))
 
 
 

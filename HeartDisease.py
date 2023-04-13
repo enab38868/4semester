@@ -62,8 +62,8 @@ model = LogisticRegression(random_state=0)
 
 clf = Pipeline(steps=[('preprocessor', preprocessor),
                       ('model', model)])
-#clf.fit(X_train, split_train_y)
-#preds = clf.predict(X_valid)
+# clf.fit(X_train, split_train_y)
+# preds = clf.predict(X_valid)
 
 print("X", X_valid.shape)
 print("y", split_train_y.shape)
