@@ -58,17 +58,16 @@ categorical_transformer = Pipeline(steps=[('onehot', OneHotEncoder(handle_unknow
 preprocessor = ColumnTransformer(
     transformers=[('cat', categorical_transformer, categorical_cols)])
 
-model = LogisticRegression(random_state=0)
+model = LogisticRegression(random_state=0, max_iter=500)
 
 clf = Pipeline(steps=[('preprocessor', preprocessor),
                       ('model', model)])
-# clf.fit(X_train, split_train_y)
-# preds = clf.predict(X_valid)
 
-print("X", X_valid.shape)
-print("y", split_train_y.shape)
-# Et eller andet steder bliver der droppet en masse linjer fra X - må vel ske under preprocessing.. ?
-
-scores = cross_val_score(model, X_valid, split_train_y, cv=5)
+scores = cross_val_score(clf, X_valid, split_pred_y, cv=5)
 print('Cross validation scores', scores)
+
+clf.fit(X_train, split_train_y)
+preds = clf.predict(X_valid)
+print("Accuracy: {:.3f}%".format(metrics.accuracy_score(split_pred_y, preds)*100))
+
 
