@@ -44,7 +44,6 @@ X = data
 y = data['HeartDisease']
 X.drop(["HeartDisease"], axis=1, inplace=True)
 
-# y = data['HeartDisease'].map({'No': 0, 'Yes': 1}) # convert strings to numeric values - chatGPT..??? - Jeg tror umiddelbart ikke den har ret lol
 le = LabelEncoder() # https://stackoverflow.com/questions/71996617/invalid-classes-inferred-from-unique-values-of-y-expected-0-1-2-3-4-5-got/72132612#72132612
 y = le.fit_transform(y)
 
@@ -56,24 +55,10 @@ cols = categorical_cols + numerical_cols  # Tror måske ikke det her giver menin
 
 X_train = split_train_X[cols].copy()  # ved ikke helt hvorfor man skal bruge .copy() her
 X_valid = split_pred_X[cols].copy()
-# X_test = X[cols]
 
 categorical_transformer = Pipeline(steps=[('onehot', OneHotEncoder(handle_unknown='ignore'))])
 preprocessor = ColumnTransformer(
     transformers=[('cat', categorical_transformer, categorical_cols)])
-
-
-def LogisticRegression():
-    # GridSearchCV bruges her til iterere over max_iter. Kan også bruges til n_estimaters/max_leaf_nodes i tree modeller osv
-    para = [{'max_iter': [100, 200, 500, 1000]}]
-    modelGSC = GridSearchCV(LogisticRegression(), param_grid=para,
-                            cv=5)  # https://stackoverflow.com/questions/59112006/setting-exact-number-of-iterations-for-logistic-regression-in-python
-    clf = Pipeline(steps=[('preprocessor', preprocessor), ('modelGSC', modelGSC)])
-
-    clf.fit(X_train, split_train_y)
-    preds = clf.predict(X_valid)
-    print("Accuracy: {:.3f}%".format(metrics.accuracy_score(split_pred_y, preds) * 100))
-
 
 #region pre GridSearchCV
 #model = LogisticRegression(random_state=0, max_iter=500)
@@ -84,7 +69,19 @@ def LogisticRegression():
 #print('Cross validation scores', scores)
 #endregion
 
-def Xgboost():
+
+def LogisticRegression():
+    # GridSearchCV bruges her til iterere over max_iter. Kan også bruges til n_estimaters/max_leaf_nodes i tree modeller osv
+    para = [{'max_iter': [100, 200, 500, 1000]}]
+    modelGSC = GridSearchCV(LogisticRegression(), param_grid=para, cv=5)  # https://stackoverflow.com/questions/59112006/setting-exact-number-of-iterations-for-logistic-regression-in-python
+    clf = Pipeline(steps=[('preprocessor', preprocessor), ('modelGSC', modelGSC)])
+
+    clf.fit(X_train, split_train_y)
+    preds = clf.predict(X_valid)
+    print("Accuracy: {:.3f}%".format(metrics.accuracy_score(split_pred_y, preds) * 100))
+
+
+def Xgboost(X):
     XGModel = XGBClassifier(n_estimators=500,
                             learning_rate=0.05,
                             # early_stopping_rounds=5,
@@ -95,7 +92,25 @@ def Xgboost():
     XGPred = clf2.predict(X_valid)
     print("XGBoost: {:.3f}%".format(metrics.accuracy_score(split_pred_y, XGPred) * 100))
 
+    realPrediction = clf2.predict(X)
+    return realPrediction
 
-Xgboost()
-#LogisticRegression()
-# prøv at brug modellen - matplotlib
+
+def LoadNewData():
+    print("Enter file path: ")  # 'C:/Users/Emil9/Datasets/test.csv'
+    string = input()
+    data2 = pd.read_csv(string)
+    X2 = data2
+
+    return X2
+
+
+# LogisticRegression()
+# Xgboost(X_valid, split_pred_y)
+print(Xgboost(LoadNewData()))
+
+
+# TODO matplotlib
+
+
+
