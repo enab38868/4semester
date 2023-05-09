@@ -1,6 +1,10 @@
+import numpy as np
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-import sklearn.metrics
+import seaborn as sns
+import seaborn.objects as so
+
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -89,28 +93,71 @@ def Xgboost(X):
     clf2 = Pipeline(steps=[('preprocessor', preprocessor), ('XGModel', XGModel)])
     clf2.fit(X_train, split_train_y)  # , clf2__early_stopping_rounds=5, clf2__eval_set=[(X_train, split_train_y)]
 
-    XGPred = clf2.predict(X_valid)
-    print("XGBoost: {:.3f}%".format(metrics.accuracy_score(split_pred_y, XGPred) * 100))
+    # -- Shows performance of model on training data --
+    # XGPred = clf2.predict(X_valid)
+    # print("XGBoost: {:.3f}%".format(metrics.accuracy_score(split_pred_y, XGPred) * 100))
 
-    realPrediction = clf2.predict(X)
-    return realPrediction
+    pred = clf2.predict(X)
+    return pred
 
 
-def LoadNewData():
-    print("Enter file path: ")  # 'C:/Users/Emil9/Datasets/test.csv'
-    string = input()
-    data2 = pd.read_csv(string)
-    X2 = data2
-
-    return X2
+string = "C:/Users/Emil9/Datasets/test(y).csv"
+X2 = pd.read_csv(string)
+X2.drop(['HeartDisease'], axis=1, inplace=True)  # CBA to delete 500 lines of y
 
 
 # LogisticRegression()
 # Xgboost(X_valid, split_pred_y)
-print(Xgboost(LoadNewData()))
+# result = Xgboost(LoadNewData())
+
+result = Xgboost(X2)
+resultDF = X2
+heartDiseaseDF = pd.DataFrame({"HeartDisease": result})
+resultDF["HeartDisease"] = heartDiseaseDF
+
+# TODO matplotlib / seaborn
+# https://towardsdatascience.com/data-visualization-for-machine-learning-and-data-science-a45178970be7
+
+#sns.set_theme(style="darkgrid")
+#sns.displot(resultDF, x=resultDF["HeartDisease"], col="BMI")
+
+print("resultDF", resultDF)
+print(resultDF.columns)
+print(resultDF.head())
+print(resultDF["HeartDisease"].describe())
 
 
-# TODO matplotlib
+df = resultDF[resultDF["HeartDisease"] == 1]
+print("df", df)
+df.plot(kind="bar")
+plt.title("HeartDisease")
+plt.xlabel("HeartDisease = True")
+plt.show()
 
 
 
+#ax1, ax2 = plt.subplots()
+#for item in resultDF["HeartDisease"] == "Yes":
+#ax1 = resultDF.value_counts().plot.bar(x=1, y=resultDF["BMI"])
+#ax2 = resultDF.value_counts().plot.bar(x=1, y=resultDF["PhysicalHealth"])
+#plt.subplots(2, 2, sharex="col")
+#plt.show()
+
+#for category in resultDF:
+#    resultDF[category].value_counts().plot(kind="bar", color=['green', 'red'])
+    #resultDF.plot(x="HeartDisease", y=resultDF[category], kind="bar", color=['green', 'red'])
+#plt.show()
+
+#heartDisease_Yes = resultDF[resultDF["HeartDisease"] == "Yes"]
+#print(heartDisease_Yes)
+#print(type(heartDisease_Yes))
+#bmi_count = heartDisease_Yes["BMI"].value_counts()
+#plt.bar(heartDisease_Yes["HeartDisease"], bmi_count.values)
+#plt.ylabel("BMI")
+#plt.xlabel("HeartDisease")
+#plt.show()
+
+# TODO plot hver interessant feature i hver sin graf / plot og brug subplots til at kombinere dem?
+# TODO Så jeg kan på den måde kombinere BMI, physicalhealth osv. fra hver row (i de rows hvor HeartDisease == Yes)
+
+# TODO Sammenlign test datasættets antal af heartdisease med prediction - de to dataframes.
