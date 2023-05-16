@@ -118,9 +118,6 @@ resultDF["HeartDisease"] = heartDiseaseDF
 # TODO matplotlib / seaborn
 # https://towardsdatascience.com/data-visualization-for-machine-learning-and-data-science-a45178970be7
 
-#sns.set_theme(style="darkgrid")
-#sns.displot(resultDF, x=resultDF["HeartDisease"], col="BMI")
-
 print("resultDF", resultDF)
 print(resultDF.columns)
 print(resultDF.head())
@@ -128,34 +125,28 @@ print(resultDF["HeartDisease"].describe())
 
 
 df = resultDF[resultDF["HeartDisease"] == 1]
+df2 = resultDF[resultDF["HeartDisease"] == 0]
 print("df", df)
 df.plot(kind="bar")
 plt.title("HeartDisease")
 plt.xlabel("HeartDisease = True")
+
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(8, 8))
+
+# HeartDisease = 1(true)
+ax1.plot(df.index, df["BMI"], 'tab:red')
+ax1.set(ylabel="BMI", title="BMI - HD=true")
+ax2.plot(df.index, df["PhysicalHealth"], 'tab:red')
+ax2.set(ylabel="PhysicalHealth", title="PhysicalHealth - HD=true")
+
+# HeartDisease = 0(false)
+ax3.plot(df2.index, df2["BMI"], 'tab:green')
+ax3.set(ylabel="BMI", title="BMI - HD=false")
+ax4.plot(df2.index, df2["PhysicalHealth"], 'tab:green')
+ax4.set(ylabel="PhysicalHealth", title="PhysicalHealth - HD=false")
+
 plt.show()
 
-
-
-#ax1, ax2 = plt.subplots()
-#for item in resultDF["HeartDisease"] == "Yes":
-#ax1 = resultDF.value_counts().plot.bar(x=1, y=resultDF["BMI"])
-#ax2 = resultDF.value_counts().plot.bar(x=1, y=resultDF["PhysicalHealth"])
-#plt.subplots(2, 2, sharex="col")
-#plt.show()
-
-#for category in resultDF:
-#    resultDF[category].value_counts().plot(kind="bar", color=['green', 'red'])
-    #resultDF.plot(x="HeartDisease", y=resultDF[category], kind="bar", color=['green', 'red'])
-#plt.show()
-
-#heartDisease_Yes = resultDF[resultDF["HeartDisease"] == "Yes"]
-#print(heartDisease_Yes)
-#print(type(heartDisease_Yes))
-#bmi_count = heartDisease_Yes["BMI"].value_counts()
-#plt.bar(heartDisease_Yes["HeartDisease"], bmi_count.values)
-#plt.ylabel("BMI")
-#plt.xlabel("HeartDisease")
-#plt.show()
 
 # TODO plot hver interessant feature i hver sin graf / plot og brug subplots til at kombinere dem?
 # TODO Så jeg kan på den måde kombinere BMI, physicalhealth osv. fra hver row (i de rows hvor HeartDisease == Yes)
