@@ -100,7 +100,7 @@ def Xgboost(X):
     pred = clf2.predict(X)
     return pred
 
-
+# --- "Real" data ---
 string = "C:/Users/Emil9/Datasets/test(y).csv"
 X2 = pd.read_csv(string)
 X2.drop(['HeartDisease'], axis=1, inplace=True)  # CBA to delete 500 lines of y
@@ -123,7 +123,7 @@ print(resultDF.columns)
 print(resultDF.head())
 print(resultDF["HeartDisease"].describe())
 
-
+# --- Plots ---
 df = resultDF[resultDF["HeartDisease"] == 1]
 df2 = resultDF[resultDF["HeartDisease"] == 0]
 print("df", df)
@@ -131,7 +131,8 @@ df.plot(kind="bar")
 plt.title("HeartDisease")
 plt.xlabel("HeartDisease = True")
 
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(8, 8))
+
+fig, ((ax1, ax2, ax3), (ay1, ay2, ay3)) = plt.subplots(2, 3, figsize=(12, 12))
 
 # HeartDisease = 1(true)
 ax1.plot(df.index, df["BMI"], 'tab:red')
@@ -139,11 +140,30 @@ ax1.set(ylabel="BMI", title="BMI - HD=true")
 ax2.plot(df.index, df["PhysicalHealth"], 'tab:red')
 ax2.set(ylabel="PhysicalHealth", title="PhysicalHealth - HD=true")
 
+age_counts = df["AgeCategory"].value_counts()
+age_categories = sorted(age_counts.index)
+
+ax3.plot(age_categories, age_counts[age_categories], 'tab:orange')
+ax3.set(xlabel="Age Category", ylabel="Count", title="Age category for people WITH heart disease")
+
 # HeartDisease = 0(false)
-ax3.plot(df2.index, df2["BMI"], 'tab:green')
-ax3.set(ylabel="BMI", title="BMI - HD=false")
-ax4.plot(df2.index, df2["PhysicalHealth"], 'tab:green')
-ax4.set(ylabel="PhysicalHealth", title="PhysicalHealth - HD=false")
+ay1.plot(df2.index, df2["BMI"], 'tab:green')
+ay1.set(ylabel="BMI", title="BMI - HD=false")
+ay2.plot(df2.index, df2["PhysicalHealth"], 'tab:green')
+ay2.set(ylabel="PhysicalHealth", title="PhysicalHealth - HD=false")
+
+age_counts2 = df2["AgeCategory"].value_counts()
+age_categories2 = sorted(age_counts.index)
+
+ay3.plot(age_categories2, age_counts2[age_categories2], 'tab:orange')
+ay3.set(xlabel="Age Category", ylabel="Count", title="Age category for people WITHOUT heart disease")
+
+
+print(df["AgeCategory"].head())
+print(type(df["AgeCategory"]))
+
+#fig2, a2 = plt.subplots()
+#a2.hist2d(x=df["AgeCategory"], y=df["BMI"])
 
 plt.show()
 
